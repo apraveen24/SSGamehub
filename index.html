@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub with Built-in & Custom Games</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      height: 100vh;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px #000;
+    }
+    #search-bar {
+      margin-top: 10px;
+      width: 80%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 20px;
+      width: 80%;
+    }
+    .game-button {
+      background: #ff6f61;
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+    .game-button:hover {
+      background: #e55a4e;
+    }
+    .iframe-container {
+      margin-top: 20px;
+      width: 80%;
+      height: 60%;
+      border: 2px solid white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.5);
+    }
+    iframe, canvas {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .add-game-form {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+    }
+    input, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: lightgray;
+    }
+  </style>
+</head>
+<body>
+  <h1>GameHub</h1>
+  <input type="text" id="search-bar" placeholder="Search for a game..." oninput="filterGames()">
+  <div class="container" id="game-container">
+    <!-- Built-in games -->
+    <button class="game-button" onclick="loadTicTacToe()">Play Tic Tac Toe</button>
+    <button class="game-button" onclick="loadSnake()">Play Snake</button>
+  </div>
+  <div class="iframe-container">
+    <div id="game-display" style="width: 100%; height: 100%;"></div>
+  </div>
+  <div class="add-game-form">
+    <input type="text" id="game-title" placeholder="Enter game title">
+    <input type="url" id="game-url" placeholder="Enter game URL">
+    <button onclick="addGame()">Add Game</button>
+  </div>
+  <footer>
+    Made with ❤️ by you! Enjoy your games.
+  </footer>
+  <script>
+    // Load games from localStorage and display them
+    function loadGames() {
+      const games = JSON.parse(localStorage.getItem('games')) || [];
+      const container = document.getElementById('game-container');
+      games.forEach(game => {
+        const button = document.createElement('button');
+        button.textContent = game.title;
+        button.className = 'game-button';
+        button.onclick = () => openGame(game.url);
+        container.appendChild(button);
+      });
+    }
+
+    // Add a new game and save it to localStorage
+    function addGame() {
+      const title = document.getElementById('game-title').value;
+      const url = document.getElementById('game-url').value;
+
+      if (title && url) {
+        const games = JSON.parse(localStorage.getItem('games')) || [];
+        games.push({ title, url });
+        localStorage.setItem('games', JSON.stringify(games));
+        document.getElementById('game-title').value = '';
+        document.getElementById('game-url').value = '';
+        const container = document.getElementById('game-container');
+        const button = document.createElement('button');
+        button.textContent = title;
+        button.className = 'game-button';
+        button.onclick = () => openGame(url);
+        container.appendChild(button);
+      } else {
+        alert('Please provide both a title and a valid URL!');
+      }
+    }
+
+    // Open a game in the iframe or a built-in game area
+    function openGame(url) {
+      const gameDisplay = document.getElementById('game-display');
+      gameDisplay.innerHTML = `<iframe src="${url}"></iframe>`;
+    }
+
+    // Built-in Tic Tac Toe game
+    function loadTicTacToe() {
+      const gameDisplay = document.getElementById('game-display');
+      gameDisplay.innerHTML = `<canvas id="ticTacToeCanvas" width="300" height="300"></canvas>`;
+      // Implement Tic Tac Toe game code here (see earlier example)
+    }
+
+    // Built-in Snake game
+    function loadSnake() {
+      const gameDisplay = document.getElementById('game-display');
+      gameDisplay.innerHTML = `<canvas id="snakeCanvas" width="300" height="300"></canvas>`;
+      // Implement Snake game code here (see earlier example)
+    }
+
+    // Filter games based on search input
+    function filterGames() {
+      const search = document.getElementById('search-bar').value.toLowerCase();
+      const buttons = document.querySelectorAll('.game-button');
+      buttons.forEach(button => {
+        const title = button.textContent.toLowerCase();
+        button.style.display = title.includes(search) ? 'inline-block' : 'none';
+      });
+    }
+
+    // Initialize the GameHub
+    loadGames();
+  </script>
+</body>
+</html>
